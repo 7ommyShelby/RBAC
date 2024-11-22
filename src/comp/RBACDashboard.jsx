@@ -9,6 +9,7 @@ import {
     FaTrashAlt,
     FaSave,
     FaTimes,
+    FaTrash,
 } from "react-icons/fa";
 
 const initialRoles = [
@@ -51,12 +52,12 @@ const RBACDashboard = () => {
 
     // const userInputRefs = useRef({ username: "", email: "", roleId: "" });
 
-    const userInputRefs = useRef(null);
+    // const userInputRefs = useRef(null);
 
-    const handleUserEdit = (user) => {
-        setEditingUser({ ...user });
-        userInputRefs.current = { ...user };
-    };
+    // const handleUserEdit = (user) => {
+    //     setEditingUser({ ...user });
+    //     // userInputRefs.current = { ...user };
+    // };
 
     console.log(users);
     console.log(editingUser, "edituser");
@@ -70,7 +71,7 @@ const RBACDashboard = () => {
         }
     };
 
-    // const handleUserEdit = (user) => setEditingUser({ ...user });
+    const handleUserEdit = (user) => setEditingUser({ ...user });
 
     const saveUser = () => {
         if (editingUser) {
@@ -78,7 +79,7 @@ const RBACDashboard = () => {
             setUsers((prev) => {
                 return (
                     prev.map((e) => {
-                        return e.id === editingUser.id ? { ...editingUser, ...userInputRefs.current } : e
+                        return e.id === editingUser.id ? { ...editingUser } : e
                     })
                 )
             })
@@ -89,6 +90,13 @@ const RBACDashboard = () => {
     const handleAddNewUser = () => {
         setNewUser({ username: "", email: "", roleId: "", active: true });
     };
+
+    const deleteHandler = (id) => {
+        setUsers((prev) => {
+            return prev.filter((e) => e.id !== id)
+        })
+    }
+
     console.log(newUser);
 
     const saveNewUser = () => {
@@ -158,39 +166,52 @@ const RBACDashboard = () => {
                     <FaUserPlus className="mr-2" /> Add New User
                 </button>
             </div>
-            {users.map((user) => (
-                <div
-                    key={user.id}
-                    className="bg-white p-4 shadow rounded border border-gray-200"
-                >
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">{user.username}</h3>
-                        <button
-                            className="p-2 bg-gray-100 hover:bg-gray-200 rounded"
-                            onClick={() => handleUserEdit(user)}
-                        >
-                            <FaEdit className="text-gray-600" />
-                        </button>
-                    </div>
-                    <div className="mt-2">
-                        <p>Email: {user.email}</p>
-                        <p>Role: {roles.find((e) => e.id === user.roleId)?.name}</p>
-                        <div className="flex items-center space-x-2 mt-2">
-                            <FaLock className="text-gray-500" />
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={user.active}
-                                    readOnly
-                                />
-                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-blue-600"></div>
-                            </label>
-                            <FaUnlock className="text-gray-500" />
+            {users.length != 0 ?
+                users.map((user) => (
+                    <div
+                        key={user.id}
+                        className="bg-white p-4 shadow rounded border border-gray-200"
+                    >
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold">{user.username}</h3>
+                            <div>
+                                <button
+                                    className="p-2 mr-3 bg-gray-100 hover:bg-gray-200 rounded"
+                                    onClick={() => handleUserEdit(user)}
+                                >
+                                    <FaEdit className="text-gray-600" />
+                                </button>
+                                <button className="p-2 mr-3 bg-red-300 hover:bg-red-500 rounded"
+                                    onClick={() => { deleteHandler(user.id) }}
+                                >
+                                    <FaTrash />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="mt-2">
+                            <p> <strong> Email : </strong> {user.email}</p>
+                            <p> <strong>Role : </strong>  {roles.find((e) => e.id === user.roleId)?.name}</p>
+                            {/* <div className="flex items-center space-x-2 mt-2">
+                                <FaLock className="text-gray-500" />
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={user.active}
+                                        readOnly
+                                    />
+                                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-blue-600"></div>
+                                </label>
+                                <FaUnlock className="text-gray-500" />
+                            </div> */}
                         </div>
                     </div>
-                </div>
-            ))}
+                )) : <>
+                    <div className="text-center">
+                        <p className="text-2xl font-semibold">Add Users</p>
+                    </div>
+                </>
+            }
         </div>
     );
 
@@ -263,7 +284,7 @@ const RBACDashboard = () => {
                         //         username: e.target.value,
                         //     }))
                         // }
-                        onChange={(e) => (userInputRefs.current.username = e.target.value)}
+                        onChange={(e) => (editingUser.username = e.target.value)}
                         className="w-full p-2 border rounded mb-4"
                         placeholder="Username"
                     />
@@ -277,7 +298,7 @@ const RBACDashboard = () => {
                         //         email: e.target.value,
                         //     }))
                         // }
-                        onChange={(e) => (userInputRefs.current.email = e.target.value)}
+                        onChange={(e) => (editingUser.email = e.target.value)}
                         className="w-full p-2 border rounded mb-4"
                         placeholder="Email"
                     />
@@ -290,7 +311,7 @@ const RBACDashboard = () => {
                         //         roleId: parseInt(e.target.value),
                         //     }))
                         // }
-                        onChange={(e) => (userInputRefs.current.roleId = parseInt(e.target.value))}
+                        onChange={(e) => (editingUser.roleId = parseInt(e.target.value))}
                         className="w-full p-2 border rounded mb-4"
                     >
                         <option value="">Select Role</option>
