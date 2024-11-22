@@ -6,7 +6,6 @@ import RBACDashboard from './comp/RBACDashboard';
 import RBACDashboard2 from './comp/RBACDashboard2';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
